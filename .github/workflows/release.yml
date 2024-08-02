@@ -1,0 +1,67 @@
+name: Python Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    permissions: write-all
+    runs-on: windows-latest  # Use a Windows runner
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller Pillow
+      - name: upgrade wheel
+        run: |
+          pip install --upgrade setuptools wheel
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+      - name: Build Windows Executable
+        run: |
+          pyinstaller cpp-buy.spec
+
+      - name: Zip the Build
+        run: Compress-Archive -Path ./dist/main/* -DestinationPath ${{ secrets.ReleaseZipName }}_${{ github.ref_name }}.zip
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ secrets.ReleaseZipName }}_${{ github.ref_name }}.zip
+          asset_name: ${{ secrets.ReleaseZipName }}_${{ github.ref_name }}.zip
+          asset_content_type: application/zip
+  update_release_draft:
+    permissions:
+      contents: write  # for release-drafter/release-drafter to create a github release
+      pull-requests: write  # for release-drafter/release-drafter to add label to PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}

@@ -1,0 +1,33 @@
+name: 漏洞反馈
+description: 报错或漏洞请使用这个模板创建，不使用此模板创建的异常、漏洞相关issue将被直接关闭
+title: "[Bug]: "
+labels: ["bug?"]
+body:
+  - type: dropdown
+    attributes:
+      label: 部署方式
+      description: "主程序使用的部署方式"
+      options:
+        - 手动部署
+        - release的打包文件
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 版本
+      description: 下载release里面程序的版本。
+      placeholder: 例如 v1.0.0 
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 异常情况
+      description: 完整描述异常情况，什么时候发生的、发生了什么
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 报错信息
+      description: 请提供完整的**控制台**报错信息（若有）以及 相关的log文件（去除敏感信息）
+    validations:
+      required: false
