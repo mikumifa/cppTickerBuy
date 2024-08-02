@@ -28,7 +28,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='bilibili-buy',
+    name='cpp-buy',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
