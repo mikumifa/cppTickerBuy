@@ -13,10 +13,9 @@
 
 开源免费，简单易用，图形界面, 速度极快的CPP抢票辅助工具
 
-
 ## 快速安装
 
-Windows 下载最新的release文件 (bilibili-buy.zip) [下载链接](https://github.com/mikumifa/cppTickerBuy/releases) 
+Windows 下载最新的release文件 (cppTickerBuy.zip) [下载链接](https://github.com/mikumifa/cppTickerBuy/releases) 
 
  
 > **NOTE**
