@@ -1,13 +1,13 @@
 <div align="center">
-  <a href="https://github.com/mikumifa/biliTickerBuy" target="_blank">
+  <a href="https://github.com/mikumifa/cppTickerBuy" target="_blank">
     <img width="160" src="icon.ico" alt="logo">
   </a>
-  <h1 id="koishi">biliTickerBuy</h1>
+  <h1 id="koishi">cppTickerBuy</h1>
 
-![GitHub all releases](https://img.shields.io/github/downloads/mikumifa/biliTickerBuy/total)
-![GitHub release (with filter)](https://img.shields.io/github/v/release/mikumifa/biliTickerBuy)
-![GitHub issues](https://img.shields.io/github/issues/mikumifa/biliTickerBuy)
-![GitHub Repo stars](https://img.shields.io/github/stars/mikumifa/biliTickerBuy)
+![GitHub all releases](https://img.shields.io/github/downloads/mikumifa/cppTickerBuy/total)
+![GitHub release (with filter)](https://img.shields.io/github/v/release/mikumifa/cppTickerBuy)
+![GitHub issues](https://img.shields.io/github/issues/mikumifa/cppTickerBuy)
+![GitHub Repo stars](https://img.shields.io/github/stars/mikumifa/cppTickerBuy)
 
 </div>
 
@@ -16,9 +16,8 @@
 
 ## 快速安装
 
-Windows 下载最新的release文件 (bilibili-buy.zip) [下载链接](https://github.com/mikumifa/biliTickerBuy/releases) 
+Windows 下载最新的release文件 (bilibili-buy.zip) [下载链接](https://github.com/mikumifa/cppTickerBuy/releases) 
 
-MacOS,linux,电脑版本不支持本地验证码请使用 [docker部署](https://github.com/mikumifa/biliTickerBuy/wiki/linux%E5%92%8CMacOS%E7%9A%84%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F-%EF%BC%88%E4%BD%BF%E7%94%A8docker)
  
 > **NOTE**
 >
@@ -39,24 +38,15 @@ Running on local URL:  http://127.0.0.1:xxx
 
 - `--share` 选择是否创建sharelink，需传入布尔值 `True/False` ，默认为 `False`
 
+说明书暂时没时间写，用以前的项目代替一下
 [点我前往更加详细的使用说明书](https://github.com/mikumifa/biliTickerBuy/wiki/%E6%8A%A2%E7%A5%A8%E8%AF%B4%E6%98%8E)
 
-| 抢票过程                                                     | 滑块过程                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![tutieshi_640x360_26s](https://github.com/mikumifa/biliTickerBuy/assets/99951454/be7c072a-7449-4df9-aeb5-fca0c49b0a0e) | ![tutieshi_640x360_13s](https://github.com/mikumifa/biliTickerBuy/assets/99951454/508e7c08-2cdd-42a9-9529-34f74e08036e) |
 
 ## 项目问题
 
-程序使用问题： [点此链接前往discussions](https://github.com/mikumifa/biliTickerBuy/discussions)
+程序使用问题： [点此链接前往discussions](https://github.com/mikumifa/cppTickerBuy/discussions)
 
-反馈程序BUG或者提新功能建议： [点此链接向项目提出反馈BUG](https://github.com/mikumifa/biliTickerBuy/issues/new/choose)
-
-## 其他可用脚本
-
-| 链接                                                      | 主要特色               |
-| --------------------------------------------------------- | ---------------------- |
-| https://github.com/bilibili-ticket/bilibili-ticket-python | 蹲回流票               |
-| https://github.com/biliticket/BHYG                        | 多种抢票策略、支持代理 |
+反馈程序BUG或者提新功能建议： [点此链接向项目提出反馈BUG](https://github.com/mikumifa/cppTickerBuy/issues/new/choose)
 
 ## 项目贡献者
 
@@ -174,7 +164,7 @@ Running on local URL:  http://127.0.0.1:xxx
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=mikumifa/biliTickerBuy&type=Date)](https://star-history.com/#mikumifa/biliTickerBuy&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=mikumifa/cppTickerBuy&type=Date)](https://star-history.com/#mikumifa/cppTickerBuy&Date)
 
 ## 免责声明
 
