@@ -1,0 +1,17 @@
+config
+venv
+.idea
+dist
+main.spec
+log/*
+log/log.txt
+build
+*.pyc
+*.log
+*.json
+tmp/*
+tmp
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
