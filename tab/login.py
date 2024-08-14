@@ -54,7 +54,7 @@ def login_tab():
 
         def add():
             main_request.cookieManager.db.delete("cookie")
-            yield ["已经注销，将打开浏览器，请在浏览器里面重新登录", gr.update(value="未登录"),
+            yield ["已经注销，在控制台（终端）登录", gr.update(value="未登录"),
                    gr.update(value=configDB.get("cookie_path"))]
             try:
                 main_request.cookieManager.get_cookies_str_force()
