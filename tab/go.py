@@ -18,7 +18,7 @@ from playsound import playsound
 from requests import HTTPError, RequestException
 
 from config import global_cookieManager, main_request, configDB, time_service
-from util import PlusUtil
+from util import PushPlusUtil
 from util.error import ERRNO_DICT, withTimeString
 
 
@@ -241,9 +241,10 @@ def go_tab():
                         gr.update(visible=False),
                         gr.update(value=qr_gen_image.get_image(), visible=True)
                     ]
-                    plusToken = configDB.get("plusToken")
-                    if plusToken is not None and plusToken != "":
-                        PlusUtil.send_message(plusToken, "抢票成功", "付款吧")
+                    pushplusToken = configDB.get("pushplusToken")
+                    if pushplusToken is not None and pushplusToken != "":
+                        PushPlusUtil.send_message(pushplusToken, "抢票成功", "付款吧")
+
                     if audio_path is not None and audio_path != "":
                         def play_sound_in_loop(file_path):
                             while True:

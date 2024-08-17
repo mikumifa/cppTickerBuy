@@ -76,14 +76,14 @@ def login_tab():
     > 关闭的方式是直接删除token即可
     """)
     with gr.Row():
-        plus_ui = gr.Textbox(
-            value=configDB.get("plusToken") if configDB.get("plusToken") is not None else "",
-            label="PlusPlus的Token",
+        pushplus_ui = gr.Textbox(
+            value=configDB.get("pushplusToken") if configDB.get("pushplusToken") is not None else "",
+            label="pushplus的Token",
             interactive=True,
-            info="留空则表示不使用PlusPlus的提醒功能",
+            info="https://www.pushplus.plus/",
         )
 
-        def inner_input(x):
-            return configDB.insert("plusToken", x)
+        def inner_input_pushplus(x):
+            return configDB.insert("pushplusToken", x)
 
-        plus_ui.change(fn=inner_input, inputs=plus_ui)
+        pushplus_ui.change(fn=inner_input_pushplus, inputs=pushplus_ui)
