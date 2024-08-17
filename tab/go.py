@@ -245,7 +245,6 @@ def go_tab():
                     pushplusToken = configDB.get("pushplusToken")
                     if pushplusToken is not None and pushplusToken != "":
                         PushPlusUtil.send_message(pushplusToken, "抢票成功", "付款吧")
-
                     serverchanKey = configDB.get("serverchanKey")
                     if serverchanKey is not None and serverchanKey != "":
                         ServerChanUtil.send_message(serverchanKey, "抢票成功", "付款吧")
