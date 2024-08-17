@@ -69,13 +69,21 @@ def login_tab():
             inputs=None,
             outputs=[info_ui, username_ui, gr_file_ui]
         )
-    gr.Markdown("""
-    > **微信消息推送功能如何添加**
-    > 参考 https://cloud.tencent.com/developer/article/2139538
-    > 粘贴token到下面即可
-    > 关闭的方式是直接删除token即可
-    """)
+    gr.Markdown(
+        """
+        🗨️ 抢票成功提醒
+        > 你需要去对应的网站获取key或token，然后填入下面的输入框  
+        > [Server酱](https://sct.ftqq.com/sendkey) | [pushplus](https://www.pushplus.plus/uc.html)  
+        > 留空以不启用提醒功能  
+        """)
     with gr.Row():
+        serverchan_ui = gr.Textbox(
+            value=configDB.get("serverchanKey") if configDB.get("serverchanKey") is not None else "",
+            label="Server酱的SendKey",
+            interactive=True,
+            info="https://sct.ftqq.com/",
+        )
+
         pushplus_ui = gr.Textbox(
             value=configDB.get("pushplusToken") if configDB.get("pushplusToken") is not None else "",
             label="pushplus的Token",
@@ -83,7 +91,11 @@ def login_tab():
             info="https://www.pushplus.plus/",
         )
 
+        def inner_input_serverchan(x):
+            return configDB.insert("serverchanKey", x)        
         def inner_input_pushplus(x):
             return configDB.insert("pushplusToken", x)
+
+        serverchan_ui.change(fn=inner_input_serverchan, inputs=serverchan_ui)
 
         pushplus_ui.change(fn=inner_input_pushplus, inputs=pushplus_ui)

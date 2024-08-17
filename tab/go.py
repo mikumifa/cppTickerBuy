@@ -19,6 +19,7 @@ from requests import HTTPError, RequestException
 
 from config import global_cookieManager, main_request, configDB, time_service
 from util import PushPlusUtil
+from util import ServerChanUtil
 from util.error import ERRNO_DICT, withTimeString
 
 
@@ -244,6 +245,11 @@ def go_tab():
                     pushplusToken = configDB.get("pushplusToken")
                     if pushplusToken is not None and pushplusToken != "":
                         PushPlusUtil.send_message(pushplusToken, "抢票成功", "付款吧")
+
+                    serverchanKey = configDB.get("serverchanKey")
+                    if serverchanKey is not None and serverchanKey != "":
+                        ServerChanUtil.send_message(serverchanKey, "抢票成功", "付款吧")
+
 
                     if audio_path is not None and audio_path != "":
                         def play_sound_in_loop(file_path):
