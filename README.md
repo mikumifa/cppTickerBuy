@@ -16,9 +16,7 @@
 
 ## 快速安装
 
-Windows 下载最新的release文件 [下载链接](https://github.com/mikumifa/cppTickerBuy/releases) 
-
- 
+Windows 下载最新的release文件 (cppTickerBuy.zip) [下载链接](https://github.com/mikumifa/cppTickerBuy/releases)
 > **NOTE**
 >
 > 如果你对Github一点也不了解, 不知道在哪下载
@@ -48,6 +46,14 @@ Running on local URL:  http://127.0.0.1:xxx
 
 反馈程序BUG或者提新功能建议： [点此链接向项目提出反馈BUG](https://github.com/mikumifa/cppTickerBuy/issues/new/choose)
 
+## 其他可用脚本
+
+| 链接                                                      | 主要特色               |
+| --------------------------------------------------------- | ---------------------- |
+| https://github.com/Koileo/ticket_for_allcpp | 能同时开多张票               |
+
+
+
 ## 项目贡献者
 
 <!-- readme: collaborators,contributors -start -->
@@ -59,6 +65,13 @@ Running on local URL:  http://127.0.0.1:xxx
                     <img src="https://avatars.githubusercontent.com/u/99951454?v=4" width="100;" alt="mikumifa"/>
                     <br />
                     <sub><b>mikumifa</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/WittF">
+                    <img src="https://avatars.githubusercontent.com/u/108567138?v=4" width="100;" alt="WittF"/>
+                    <br />
+                    <sub><b>W1ttF</b></sub>
                 </a>
             </td>
 		</tr>
