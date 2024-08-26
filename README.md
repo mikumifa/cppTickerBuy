@@ -16,7 +16,7 @@
 
 ## 快速安装
 
-Windows 下载最新的release文件 (bilibili-buy.zip) [下载链接](https://github.com/mikumifa/cppTickerBuy/releases) 
+Windows 下载最新的release文件 [下载链接](https://github.com/mikumifa/cppTickerBuy/releases) 
 
  
 > **NOTE**

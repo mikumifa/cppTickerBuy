@@ -4,12 +4,13 @@ from loguru import logger
 
 from tab.go import go_tab
 from tab.login import login_tab
+from tab.problems import problems_tab
 from tab.settings import setting_tab
 
 header = """
 # CPP 抢票🌈
 
-⚠️此项目完全开源免费 （[项目地址](https://github.com/mikumifa/biliTickerBuy)），切勿进行盈利，所造成的后果与本人无关。
+⚠️此项目完全开源免费 （[项目地址](https://github.com/mikumifa/cppTickerBuy)），切勿进行盈利，所造成的后果与本人无关。
 """
 
 short_js = """
@@ -40,8 +41,8 @@ if __name__ == "__main__":
             go_tab()
         with gr.Tab("登录管理"):
             login_tab()
-        # with gr.Tab("常见问题"):
-        #     problems_tab()
+        with gr.Tab("常见问题"):
+            problems_tab()
 
     print("CPP账号的登录是在此控制台，请留意提示！！")
     print("点击下面的网址运行程序     ↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
