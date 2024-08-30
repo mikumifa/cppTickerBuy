@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="https://g.alicdn.com/AWSC/AWSC/awsc.js"></script>
+</head>
+<body>
+<div id="nc"></div>
+<script>
+    // 实例化nc
+    AWSC.use("nc", function (state, module) {
+        // 初始化
+        window.nc = module.init({
+            appkey: "FFFF0N000000000097AA",
+            scene: "nc_activity_h5",
+            renderTo: "nc",
+            success: function (data) {
+                document.body.innerHTML += "<textarea id=\"mync\">" + JSON.stringify(data) + "</textarea>";
+            },
+            fail: function (failCode) {
+                document.body.innerHTML += "<textarea id=\"mync\">" + JSON.stringify(data) + "</textarea>";
+            },
+            error: function (errorCode) {
+                document.body.innerHTML += "<textarea id=\"mync\">" + JSON.stringify(data) + "</textarea>";
+            }
+        });
+    })
+</script>
+</body>
+</html>
