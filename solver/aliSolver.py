@@ -51,6 +51,7 @@ def solve(_browser):
     return ret
 
 
+@Timer
 def get_edge_browser():
     playwright = sync_playwright().start()
     browser = playwright.chromium.launch(headless=True, channel="msedge")
