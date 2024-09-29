@@ -319,7 +319,7 @@ def go_tab():
             gr.update(value="抢票结束，具体查看控制台日志", visible=True),
             gr.update(visible=False),  # 当设置play_sound_process,应该有提示声音
             gr.update(),
-            gr.update(value=audio_path, autoplay=True),
+            gr.update(),
         ]
 
     mode_ui.change(
