@@ -1,6 +1,5 @@
 import hashlib
 import json
-import os
 import secrets
 import string
 import threading
@@ -14,7 +13,6 @@ import qrcode
 import retry
 from gradio import SelectData
 from loguru import logger
-from playsound import playsound
 from requests import HTTPError, RequestException
 
 from config import global_cookieManager, main_request, configDB, time_service
@@ -95,7 +93,7 @@ def go_tab():
         with gr.Accordion(label='配置抢票成功声音提醒[可选]', open=False):
             with gr.Row():
                 audio_path_ui = gr.Audio(
-                    label="上传提示声音", type="filepath")
+                    label="上传提示声音", type="filepath", loop=True)
 
         def input_phone(_phone):
             global_cookieManager.set_config_value("phone", _phone)
@@ -135,6 +133,8 @@ def go_tab():
             gr.update(value=withTimeString("详细信息见控制台"), visible=True),
             gr.update(visible=True),
             gr.update(),
+            gr.update(),
+
         ]
         while isRunning:
             try:
@@ -160,7 +160,9 @@ def go_tab():
                                         time_difference)) + '秒') if time_difference > 6 else '即将开抢',
                                               visible=True),
                                     gr.update(visible=True),
-                                    gr.update()
+                                    gr.update(),
+                                    gr.update(),
+
                                 ]
                                 time.sleep(1)
                             else:
@@ -178,15 +180,12 @@ def go_tab():
                                     gr.update(value='手动停止定时抢票', visible=True),
                                     gr.update(visible=True),
                                     gr.update(),
+                                    gr.update(),
                                 ]
                                 logger.info("手动停止定时抢票")
                                 return
                         else:
                             break
-                if not isRunning:
-                    gr.update(value="停止", visible=True),
-                    return
-
                 # 数据准备
                 tickets_info = json.loads(tickets_info_str)
                 people_cur = tickets_info["people_cur"]
@@ -197,6 +196,7 @@ def go_tab():
 
                 @retry.retry(exceptions=RequestException, tries=60, delay=interval / 1000)
                 def inner_request():
+                    nonlocal isRunning
                     if not isRunning:
                         raise ValueError("抢票结束")
 
@@ -214,6 +214,16 @@ def go_tab():
                     logger.info(
                         f'状态码: {err}({ERRNO_DICT.get(err, "未知错误码")}), 请求体: {ret}'
                     )
+                    if ret["message"] == "同证件限购一张！":
+                        isRunning = False
+                        raise ValueError("同证件限购一张！")
+
+                    if ret["message"] == "请求过于频繁，请稍后再试":
+                        logger.info(
+                            "出现风控，重新登录"
+                        )
+                        # _request.refreshToken()
+
                     if not ret["isSuccess"]:
                         raise HTTPError("重试次数过多，重新准备订单")
                     return ret, err
@@ -230,9 +240,11 @@ def go_tab():
                         visible=True,
                     ),
                     gr.update(visible=True),
-                    gr.update()]
+                    gr.update(),
+                    gr.update(),
+                ]
                 if errno:
-                    logger.info(f"2）扫码支付")
+                    logger.info(f"2）微信扫码支付（暂不支持支付宝）")
                     qr_gen = qrcode.QRCode()
                     qr_gen.add_data(request_result['result']['code'])
                     qr_gen.make(fit=True)
@@ -240,7 +252,9 @@ def go_tab():
                     yield [
                         gr.update(value=withTimeString("生成付款二维码"), visible=True),
                         gr.update(visible=False),
-                        gr.update(value=qr_gen_image.get_image(), visible=True)
+                        gr.update(value=qr_gen_image.get_image(), visible=True),
+                        gr.update(),
+
                     ]
                     pushplusToken = configDB.get("pushplusToken")
                     if pushplusToken is not None and pushplusToken != "":
@@ -249,22 +263,13 @@ def go_tab():
                     if serverchanKey is not None and serverchanKey != "":
                         ServerChanUtil.send_message(serverchanKey, "抢票成功", "付款吧")
 
-
                     if audio_path is not None and audio_path != "":
-                        def play_sound_in_loop(file_path):
-                            while True:
-                                try:
-                                    playsound(file_path)
-                                except Exception as e:
-                                    logger.info(f"播放音乐失败: {e}")
-                                time.sleep(1)
-
                         yield [
                             gr.update(value="开始放歌, 暂未实现关闭音乐功能，想关闭音乐请重启程序", visible=True),
                             gr.update(visible=False),
-                            gr.update()
+                            gr.update(),
+                            gr.update(value=audio_path, autoplay=True),
                         ]
-                        play_sound_in_loop(os.path.normpath(audio_path))
 
                     break
                 if mode == 1:
@@ -276,21 +281,26 @@ def go_tab():
                 return [
                     gr.update(value=withTimeString("配置文件格式错误"), visible=True),
                     gr.update(visible=True),
-                    gr.update()
+                    gr.update(),
+                    gr.update(),
+
                 ]
             except ValueError as e:
                 logger.info(f"{e}")
                 yield [
                     gr.update(value=withTimeString(f"有错误，具体查看控制台日志\n\n当前错误 {e}"), visible=True),
                     gr.update(visible=True),
-                    gr.update()
+                    gr.update(),
+                    gr.update(),
+
                 ]
             except HTTPError as e:
                 logger.error(f"请求错误: {e}")
                 yield [
                     gr.update(value=withTimeString(f"有错误，具体查看控制台日志\n\n当前错误 {e}"), visible=True),
                     gr.update(visible=True),
-                    gr.update()
+                    gr.update(),
+                    gr.update(),
 
                 ]
             except Exception as e:
@@ -298,15 +308,18 @@ def go_tab():
                 yield [
                     gr.update(value=withTimeString(f"有错误，具体查看控制台日志\n\n当前错误 {e}"), visible=True),
                     gr.update(visible=True),
-                    gr.update()
+                    gr.update(),
+                    gr.update(),
+
                 ]
             finally:
                 time.sleep(interval / 1000.0)
 
         yield [
-            gr.update(value="抢票结束", visible=True),
+            gr.update(value="抢票结束，具体查看控制台日志", visible=True),
             gr.update(visible=False),  # 当设置play_sound_process,应该有提示声音
-            gr.update()
+            gr.update(),
+            gr.update(value=audio_path, autoplay=True),
         ]
 
     mode_ui.change(
@@ -349,7 +362,7 @@ def go_tab():
         fn=start_go,
         inputs=[ticket_ui, time_tmp, interval_ui, mode_ui,
                 total_attempts_ui, audio_path_ui],
-        outputs=[go_ui, stop_btn, qr_image],
+        outputs=[go_ui, stop_btn, qr_image, audio_path_ui],
     )
     stop_btn.click(
         fn=stop,

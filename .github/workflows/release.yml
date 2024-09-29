@@ -7,12 +7,27 @@ on:
 
 jobs:
   build:
-    permissions: write-all
-    runs-on: windows-latest  # Use a Windows runner
-
+    name: Build Executables
+    runs-on: ${{ matrix.config.os.name }}
+    strategy:
+      matrix:
+        config:
+          - os:
+              name: ubuntu-latest
+              filename: Linux
+          - os:
+              name: macos-14
+              filename: MacOS_amd64
+          - os:
+              name: macos-12
+              filename: MacOS_x64
+          - os:
+              name: windows-latest
+              filename: Windows
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
+
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -20,48 +35,31 @@ jobs:
           python-version: 3.11
           cache: 'pip'
 
-      - name: Install dependencies
-        run: |
-          pip install pyinstaller Pillow
-      - name: upgrade wheel
-        run: |
-          pip install --upgrade setuptools wheel
-      - name: Install requirements
-        run: |
-          pip install -r requirements.txt
-      - name: Build Windows Executable
-        run: |
-          pyinstaller cpp-buy.spec
 
-      - name: Zip the Build
-        run: Compress-Archive -Path ./dist/main/* -DestinationPath ${{ secrets.ReleaseZipName }}_${{ github.ref_name }}.zip
+      - name: Upgrade setuptools, wheel, and install requirements
+        run: |
+          pip install --upgrade setuptools wheel pyinstaller~=5.13.2 && pip install -r requirements.txt
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Pyinstaller
+        shell: bash
+        run: |
+          PLAYWRIGHT_BROWSERS_PATH=0 playwright install chromium
+          pyinstaller main.spec
+      - name: Zip the Build-windows
+        if: matrix.config.os.filename == 'Windows'
+        run: Compress-Archive -Path ./dist/cppTicKerBuy.exe -DestinationPath tmp.zip
+
+      - name: Zip the Build-linux
+        if: matrix.config.os.filename != 'Windows'
+        run: |
+          cd ./dist
+          zip -r  ../tmp.zip cppTicKerBuy
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ secrets.ReleaseZipName }}_${{ github.ref_name }}.zip
-          asset_name: ${{ secrets.ReleaseZipName }}_${{ github.ref_name }}.zip
-          asset_content_type: application/zip
-  update_release_draft:
-    permissions:
-      contents: write  # for release-drafter/release-drafter to create a github release
-      pull-requests: write  # for release-drafter/release-drafter to add label to PR
-    runs-on: ubuntu-latest
-    steps:
-      - uses: release-drafter/release-drafter@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          file: tmp.zip
+          asset_name: cppTicKerBuy_${{ matrix.config.os.filename }}_${{ github.ref_name }}.zip
+          tag: ${{ github.ref }}
+          overwrite: true

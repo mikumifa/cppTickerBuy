@@ -44,6 +44,9 @@ class CppRequest:
         except Exception as e:
             return "未登录"
 
+    def refreshToken(self):
+        self.cookieManager.refreshToken()
+
 
 if __name__ == "__main__":
     test_request = CppRequest(cookies_config_path="cookies.json")

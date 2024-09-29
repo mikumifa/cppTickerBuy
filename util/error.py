@@ -2,6 +2,7 @@
 import datetime
 
 ERRNO_DICT = {
+    False: '抢票失败'
 }
 
 
