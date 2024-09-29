@@ -53,7 +53,7 @@ jobs:
         if: matrix.config.os.filename != 'Windows'
         run: |
           cd ./dist
-          zip -r  ../tmp.zip cppTicKerBuy
+          zip -r  ../tmp.zip cppTickerBuy
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
