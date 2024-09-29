@@ -2,7 +2,6 @@ config
 venv
 .idea
 dist
-main.spec
 log/*
 log/log.txt
 build
