@@ -25,13 +25,13 @@ class CppRequest:
 
     def get(self, url, data=None):
         self.headers["cookie"] = self.cookieManager.get_cookies_str()
-        response = self.session.get(url, data=data, headers=self.headers, timeout=1)
+        response = self.session.get(url, data=data, headers=self.headers)
         response.raise_for_status()
         return response
 
     def post(self, url, data=None):
         self.headers["cookie"] = self.cookieManager.get_cookies_str()
-        response = self.session.post(url, data=data, headers=self.headers, timeout=1)
+        response = self.session.post(url, data=data, headers=self.headers)
         response.raise_for_status()
         return response
 
