@@ -1,9 +1,11 @@
 import argparse
+
 import gradio as gr
 from loguru import logger
 
 from tab.go import go_tab
 from tab.login import login_tab
+from tab.order import order_tab
 from tab.problems import problems_tab
 from tab.settings import setting_tab
 
@@ -39,6 +41,8 @@ if __name__ == "__main__":
             setting_tab()
         with gr.Tab("抢票"):
             go_tab()
+        with gr.Tab("查看订单"):
+            order_tab()
         with gr.Tab("登录管理"):
             login_tab()
         with gr.Tab("常见问题"):
