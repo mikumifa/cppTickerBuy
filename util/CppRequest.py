@@ -29,9 +29,9 @@ class CppRequest:
         response.raise_for_status()
         return response
 
-    def post(self, url, data=None):
+    def post(self, url, data=None, proxies=None):
         self.headers["cookie"] = self.cookieManager.get_cookies_str()
-        response = self.session.post(url, data=data, headers=self.headers)
+        response = self.session.post(url, data=data, headers=self.headers, proxies=proxies, timeout=15)
         response.raise_for_status()
         return response
 

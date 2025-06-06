@@ -14,6 +14,7 @@ import retry
 from gradio import SelectData
 from loguru import logger
 from requests import HTTPError, RequestException
+import requests
 
 from config import global_cookieManager, main_request, configDB, time_service
 from util import PushPlusUtil
@@ -33,6 +34,12 @@ def format_dictionary_to_string(data):
 
     formatted_string = "&".join(formatted_string_parts)
     return formatted_string
+
+def get_proxy(site):
+    return requests.get(f"http://{site}/get/").json()
+
+def delete_proxy(site, proxy):
+    requests.get(f"http://{site}/delete/?proxy={proxy}")
 
 
 def go_tab():
@@ -120,11 +127,17 @@ def go_tab():
                 info="设置抢票的总次数",
                 visible=False,
             )
+            use_proxy_ui = gr.Textbox(
+                label="IP代理池地址",
+                value="127.0.0.1:5010",
+                info="留空不使用代理池，请参考https://github.com/jhao104/proxy_pool配置代理池",
+                visible=True
+            )
 
     validate_con = threading.Condition()
 
     def start_go(tickets_info_str, time_start, interval, mode,
-                 total_attempts, audio_path):
+                 total_attempts, audio_path, proxy_pool_site):
         nonlocal isRunning
         isRunning = True
         left_time = total_attempts
@@ -192,10 +205,13 @@ def go_tab():
                 _request = main_request
                 # 订单准备
                 logger.info(f"1）发起抢票请求")
+                proxy = None
+                proxies = None
+                fail_cnt = 0
 
-                @retry.retry(exceptions=RequestException, tries=60, delay=interval / 1000)
+                @retry.retry(exceptions=RequestException, tries=200, delay=interval / 1000)
                 def inner_request():
-                    nonlocal isRunning
+                    nonlocal isRunning, proxy, proxies, fail_cnt
                     if not isRunning:
                         raise ValueError("抢票结束")
 
@@ -203,12 +219,28 @@ def go_tab():
                     n = string.ascii_letters + string.digits
                     nonce = ''.join(secrets.choice(n) for i in range(32))
                     sign = hashlib.md5(f"2x052A0A1u222{timestamp}{nonce}{ticket_id}2sFRs".encode('utf-8')).hexdigest()
-
-                    ret = _request.post(
-                        url=f"https://www.allcpp.cn/allcpp/ticket/buyTicketWeixin.do?ticketTypeId={ticket_id}"
-                            f"&count={len(people_cur)}&nonce={nonce}&timeStamp={timestamp}&sign={sign}&payType=0&"
-                            f"purchaserIds={','.join([str(p['id']) for p in people_cur])}",
-                    ).json()
+                    try:
+                        ret = _request.post(
+                            url=f"http://www.allcpp.cn/allcpp/ticket/buyTicketWeixin.do?ticketTypeId={ticket_id}"
+                                f"&count={len(people_cur)}&nonce={nonce}&timeStamp={timestamp}&sign={sign}&payType=0&"
+                                f"purchaserIds={','.join([str(p['id']) for p in people_cur])}",proxies=proxies
+                        ).json()
+                    except Exception as e:
+                        logger.error("请求失败 {}".format(e))
+                        if len(proxy_pool_site) > 0:
+                            fail_cnt += 1
+                            if fail_cnt > 8:
+                                logger.info("自动重选代理IP")
+                                if proxy:
+                                    delete_proxy(proxy_pool_site, proxy)
+                                    proxy = None
+                                while not proxy:
+                                    proxy = get_proxy(proxy_pool_site).get("proxy")
+                                if proxy:
+                                    proxies = {"http": "http://{}".format(proxy), "https": "http://{}".format(proxy)}
+                                logger.info(f"Switch to Proxy {proxy}")
+                                fail_cnt = 0
+                        raise RequestException()
                     err = ret["isSuccess"]
                     logger.info(
                         f'状态码: {err}({ERRNO_DICT.get(err, "未知错误码")}), 请求体: {ret}'
@@ -218,10 +250,23 @@ def go_tab():
                         raise ValueError("同证件限购一张！")
 
                     if ret["message"] == "请求过于频繁，请稍后再试":
-                        logger.info(
-                            "出现风控，重新登录"
-                        )
-                        # _request.refreshToken()
+                        if len(proxy_pool_site) > 0:
+                            logger.info(
+                                "出现风控，自动切换IP"
+                            )
+                            if proxy:
+                                delete_proxy(proxy_pool_site, proxy)
+                                proxy = None
+                            while not proxy:
+                                proxy = get_proxy(proxy_pool_site).get("proxy")
+                            if proxy:
+                                proxies = {"http": "http://{}".format(proxy),"https": "http://{}".format(proxy)}
+                            logger.info(f"Switch to Proxy {proxy}")
+                        else:
+                            logger.info(
+                                "出现风控，请尝试手动切换IP"
+                            )
+                            input("切换后任意键重试：")
 
                     if not ret["isSuccess"]:
                         raise HTTPError("重试次数过多，重新准备订单")
@@ -360,7 +405,7 @@ def go_tab():
     go_btn.click(
         fn=start_go,
         inputs=[ticket_ui, time_tmp, interval_ui, mode_ui,
-                total_attempts_ui, audio_path_ui],
+                total_attempts_ui, audio_path_ui, use_proxy_ui],
         outputs=[go_ui, stop_btn, qr_image, audio_path_ui],
     )
     stop_btn.click(
