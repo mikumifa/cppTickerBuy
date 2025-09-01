@@ -1,0 +1,13 @@
+env/
+venv/
+.env/
+.venv/
+
+.idea/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.json

@@ -35,11 +35,10 @@ def login_tab():
         info="此窗口为输出信息", label="输出信息", interactive=False
     )
     with gr.Row():
-        upload_ui = gr.UploadButton(label="导入")
-        add_btn = gr.Button("登录")
+        upload_ui = gr.UploadButton(label="导入配置文件")
 
         def upload_file(filepath):
-            main_request.cookieManager.db.delete("cookie")
+            main_request.cookieManager.reset()
             yield ["已经注销，请选择登录信息文件", gr.update(), gr.update()]
             try:
                 configDB.insert("cookie_path", filepath)
@@ -52,20 +51,35 @@ def login_tab():
 
         upload_ui.upload(upload_file, [upload_ui], [info_ui, username_ui, gr_file_ui])
 
-        def add():
-            main_request.cookieManager.db.delete("cookie")
-            yield ["已经注销，在控制台（终端）登录", gr.update(value="未登录"),
-                   gr.update(value=configDB.get("cookie_path"))]
+    with gr.Row():
+        user_input = gr.Textbox(label="用户名")
+        pass_input = gr.Textbox(label="密码", type="password")
+        login_btn = gr.Button("使用账号密码登录")
+        logout_btn = gr.Button("注销登录")
+
+        def login(username, password):
+            main_request.cookieManager.reset()
+            yield ["已经注销，请重新登录", gr.update(value="未登录"), gr.update(value=configDB.get("cookie_path"))]
             try:
-                main_request.cookieManager.get_cookies_str_force()
+                main_request.cookieManager.login_by_phone_passwd(username, password)
                 name = main_request.get_request_name()
-                yield [f"登录成功", gr.update(value=name), gr.update(value=configDB.get("cookie_path"))]
+                if name == '未登录':
+                    yield ["登录失败，请检查账号密码", gr.update(value="未登录"), gr.update(value=configDB.get("cookie_path"))]
+                else:
+                    yield [gr.update(value="登录成功"), gr.update(value=name), gr.update(value=configDB.get("cookie_path"))]
             except Exception:
                 name = main_request.get_request_name()
                 yield ["登录出现错误", gr.update(value=name), gr.update(value=configDB.get("cookie_path"))]
-
-        add_btn.click(
-            fn=add,
+        def logout():
+            main_request.cookieManager.reset()
+            yield ["已经注销，重新登录", gr.update(value="未登录"), gr.update(value=configDB.get("cookie_path"))]
+        login_btn.click(
+            fn=login,
+            inputs=[user_input, pass_input],
+            outputs=[info_ui, username_ui, gr_file_ui]
+        )
+        logout_btn.click(
+            fn=logout,
             inputs=None,
             outputs=[info_ui, username_ui, gr_file_ui]
         )
